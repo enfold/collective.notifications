@@ -1,0 +1,40 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="collective.notifications">
+
+  <browser:jbot directory="template_overrides" />
+
+  <browser:page
+      name="site-notifications"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class=".notifications.SiteNotificationsView"
+      template="templates/site_notifications.pt"
+      permission="cmf.ModifyPortalContent"
+      />
+
+  <browser:page
+      name="my-notifications"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class=".notifications.NotificationsView"
+      template="templates/notifications.pt"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="notification-read"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class=".notifications.NotificationReadView"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="notification-count"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class=".notifications.NotificationsWaitingView"
+      permission="zope2.View"
+      />
+
+</configure>

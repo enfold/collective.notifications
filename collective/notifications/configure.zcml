@@ -1,0 +1,28 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="collective.notifications">
+
+  <include package="five.globalrequest" />
+
+  <five:registerPackage package="." initialize=".initialize" />
+
+  <include file="profiles.zcml" />
+  <include package=".browser" />
+  <include package=".upgrades" />
+
+  <adapter factory=".notifications.NotificationStorage" />
+
+  <subscriber
+    for="collective.notifications.interfaces.INotificationRequestedEvent"
+    handler=".notifications.handle_notification_requested"
+    />
+
+  <utility
+    provides="collective.notifications.interfaces.IExternalNotificationService"
+    factory=".external.EmailNotifier"
+    name="email"
+    />
+
+</configure>
