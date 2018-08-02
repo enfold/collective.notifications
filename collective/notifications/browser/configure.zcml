@@ -37,4 +37,18 @@
       permission="zope2.View"
       />
 
+  <browser:page
+      name="send-notification"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class=".notifications.SendNotificationForm"
+      permission="cmf.ModifyPortalContent"
+      />
+
+  <adapter factory=".notifications.SendNotificationFormAdapter" />
+
+  <utility
+      component=".notifications.services_vocabulary_factory"
+      name="collective.notifications.external_services"
+      />
+
 </configure>

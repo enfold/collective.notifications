@@ -18,6 +18,9 @@
       <h1 class="documentFirstHeading" i18n:translate="">
         Site Notifications
       </h1>
+      <h4>
+        <a tal:attributes="href string:${portal_url}/@@send-notification">Send notification</a>
+      </h4>
     </metal:title>
 
     <metal:content-core metal:fill-slot="content-core"

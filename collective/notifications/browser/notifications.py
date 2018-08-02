@@ -1,12 +1,27 @@
 import urllib
 
 from Products.Five.browser import BrowserView
+from z3c.form import button
+from z3c.form import form
+from zope import schema
+from zope.component import adapts
+from zope.component import getUtilitiesFor
+from zope.interface import Interface
+from zope.interface import implements
+from zope.interface import provider
+from zope.event import notify
+from zope.schema.interfaces import IVocabularyFactory
+from zope.schema.vocabulary import SimpleVocabulary
 
 from plone.api import portal
 from plone.api import user
+from plone.autoform.form import AutoExtensibleForm
 from plone.protect.utils import addTokenToUrl
 
+from ..interfaces import IExternalNotificationService
 from ..interfaces import INotificationStorage
+from ..interfaces import _
+from ..interfaces import NotificationRequestedEvent
 
 
 class NotificationsView(BrowserView):
@@ -89,3 +104,86 @@ class NotificationsWaitingView(BrowserView):
         notifications = storage.get_notifications_for_user(current_user.id)
         notifications = [n for (n, r) in notifications if not r]
         return str(len(notifications))
+
+
+@provider(IVocabularyFactory)
+def services_vocabulary_factory(object):
+    services = getUtilitiesFor(IExternalNotificationService)
+    services = [name for name, service in services]
+    vocabulary = SimpleVocabulary.fromValues(services)
+    return vocabulary
+
+
+class SendNotificationSchema(Interface):
+
+    note = schema.Text(
+        title=_(u'Notification Text'),
+    )
+
+    recipients = schema.Text(
+        title=_(u'Recipients'),
+        description=_(u"Type in a user or group id on each line. Groups "
+                      u"need to have the 'group:' prefix"),
+    )
+
+    url = schema.URI(
+        title=_(u'Notification URL'),
+        description=_(u"URL associated with the notification. Will use "
+                      u"context URL if not provided"),
+        required=False,
+    )
+
+    external = schema.Set(
+        title=_(u'External Services'),
+        description=_(u"Also send notification using selected external "
+                      u"services"),
+        required=False,
+        value_type=schema.Choice(
+            vocabulary='collective.notifications.external_services',
+        ),
+    )
+
+    first_read = schema.Bool(
+        title=_(u'Mark Read After First View'),
+        description=_(u"If checked, notification will be marked read for "
+                      u"all users after first view"),
+        default=False,
+    )
+
+
+class SendNotificationFormAdapter(object):
+    implements(SendNotificationSchema)
+    adapts(Interface)
+
+    def __init__(self, context):
+        self.note = None
+        self.recipients = None
+        self.url = None
+        self.external = None
+        self.first_read = None
+
+
+class SendNotificationForm(AutoExtensibleForm, form.Form):
+
+    schema = SendNotificationSchema
+    form_name = 'send_notification_form'
+
+    label = _(u'Send Notification')
+    description = _(u"Send a notification to specific site users or groups")
+
+    @button.buttonAndHandler(_(u'Send'))
+    def handleSend(self, action):
+        data, errors = self.extractData()
+        if errors:
+            self.status = self.formErrorsMessage
+            return
+        context = self.context
+        notify(NotificationRequestedEvent(context,
+                                          data['note'],
+                                          data['recipients'],
+                                          url=data['url'],
+                                          external=list(data['external']),
+                                          first_read=data['first_read']
+                                          )
+               )
+        self.status = "Notification sent!"

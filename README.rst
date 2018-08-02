@@ -15,7 +15,8 @@ Run buildout
 
 In Site Setup -> Add-ons, activate Notifications.
 Once it is installed you will see "Notifications" under Add-on Configuration.
-This is where you can see and manage site notifications.
+This is where you can see and manage site notifications. There is also a
+link here to a form that allows admins to send notifications.
 
 
 Sending Notifications
@@ -28,17 +29,16 @@ code similar to this:
 ::
 
     from zope.event import notify
-    from ..interfaces import NotificationRequestedEvent
-    notify(NotificationRequestedEvent(user_id,
-                                      context,
+    from collective.notification.interfaces import NotificationRequestedEvent
+    notify(NotificationRequestedEvent(context,
                                       note,
                                       recipients,
+                                      user=user_id,
                                       url=action_url,
                                       external='email',
                                       first_read=False))
 
-The parameter `user_id` is the id for the user that generated the event;
-The `context` is the affected object; `note` is a plain text string with the
+The `context` is the affected object. `note` is a plain text string with the
 description of the action that is being notified or needs to be performed;
 `recipients` is a list of user ids of all the users that will be notified,
 it allows the use of group ids with the prefix "group", so for example
@@ -47,16 +47,18 @@ notification to all users of the groups reviewers and staff, as well as to
 individual users jsmith and jdoe. The special group "Members" will notify
 all portal users.
 
-The last three parameters are optional: `url` will be used as a site action
-if provided, otherwise the context url will be used. `external` refers to
-external notification services (see below). Currently, the only service
-included is 'email'. The parameter can be a list, in which case the
-notification is sent using all the listed services. Default is None, so no
-external notifications will be sent if this parameter is omitted. Finally,
-`first_read`, if True, marks the notification as read for all recipients
-after one user reads it. This can be used to send a notification to a group
-where multiple users can take action, but can safely ignore the notification
-once someone reads it. Default is False.
+The last four parameters are optional: `user` can be the userid of the user
+associated with the notification. This is just in case we need a different
+user than the currently logged in user, which is the default. `url` will be
+used as a site action if provided, otherwise the context url will be used.
+`external` refers to external notification services (see below). Currently,
+the only service included is 'email'. The parameter can be a list, in which
+case the notification is sent using all the listed services. Default is None,
+so no external notifications will be sent if this parameter is omitted.
+Finally, `first_read`, if True, marks the notification as read for all
+recipients after one user reads it. This can be used to send a notification
+to a group where multiple users can take action, but can safely ignore the
+notification once someone reads it. Default is False.
 
 
 External Notification Services
@@ -73,7 +75,7 @@ Example:
 ::
 
     from zope.interface import implements
-    from .interfaces import IExternalNotificationService
+    from collective.notification.interfaces import IExternalNotificationService
 
     class TwitterNotifier(object):
         implements(IExternalNotificationService)
@@ -93,8 +95,8 @@ This requires configuring the service as un utility in configure.zcml:
     />
 
 
-Async (next release)
-====================
+Async and Celery
+================
 
 Notifications attempts to use plone.app.async to perform the notifications,
 but if that fails it will finish the task directly.
@@ -108,3 +110,11 @@ Refer to the collective.async pypi page
 for instructions on setting it up if you use it.
 Async is NOT required for Notifications to work,
 however it is advised, especially for high traffic sites.
+
+
+Note
+====
+
+For inserting the number of pending notifications, the "toolbar.pt" template
+from plone.app.layout was overridden using z3c.jbot. Keep this in mind if
+your project has its own modifications for this template.

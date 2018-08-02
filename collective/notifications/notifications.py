@@ -14,6 +14,7 @@ from plone import api
 from plone.app.layout.navigation.interfaces import INavigationRoot
 from plone.uuid.interfaces import IUUIDGenerator
 
+from .async import queueJob
 from .interfaces import INotificationStorage
 from .interfaces import IExternalNotificationService
 
@@ -111,22 +112,26 @@ class NotificationStorage(object):
 class Notification(Persistent):
 
     def __init__(self,
-                 user,
                  context,
                  note,
                  recipients,
+                 user=None,
                  url=None,
                  first_read=False,
                  external=None):
         uid = getUtility(IUUIDGenerator)()
         self.uid = uid
         self.date = datetime.now()
-        self.user = user.id
-        self.context = context.UID()
+        self.context = getattr(context, 'UID', False) and context.UID() or context.id
         self.note = note
         self.recipients = self.get_recipients(recipients)
         self.first_read = first_read
         self.external = external
+        if user is None:
+            user = api.user.get_current()
+            if user is not None:
+                user = user.id
+        self.user = user
         if url is None:
             url = context.absolute_url()
         self.url = url
@@ -166,10 +171,10 @@ class Notification(Persistent):
 
 
 def handle_notification_requested(event):
-    notification = Notification(event.user,
-                                event.object,
+    notification = Notification(event.object,
                                 event.note,
                                 event.recipients,
+                                event.user,
                                 event.url,
                                 event.first_read,
                                 event.external)
@@ -177,4 +182,4 @@ def handle_notification_requested(event):
     storage = INotificationStorage(site)
     storage.add_notification(notification)
     notification.notify()
-    notification.notify_external()
+    queueJob(notification.uid)
