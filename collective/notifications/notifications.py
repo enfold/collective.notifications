@@ -40,7 +40,8 @@ class NotificationStorage(object):
                 self.annotations[NOTIFICATION_KEY][userid] = PersistentList()
 
     def get_notifications(self):
-        self.check_initialized()
+        if NOTIFICATION_KEY not in self.annotations:
+            return []
         return self.annotations[NOTIFICATION_KEY][MAIN]
 
     def add_notification(self, notification):
@@ -48,7 +49,8 @@ class NotificationStorage(object):
         self.annotations[NOTIFICATION_KEY][MAIN].append(notification)
 
     def get_notifications_for_user(self, userid):
-        self.check_initialized(userid)
+        if NOTIFICATION_KEY not in self.annotations:
+            return []
         return self.annotations[NOTIFICATION_KEY][userid]
 
     def add_notification_for_user(self, userid, uid):
