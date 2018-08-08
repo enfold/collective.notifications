@@ -42,6 +42,8 @@ class NotificationStorage(object):
     def get_notifications(self):
         if NOTIFICATION_KEY not in self.annotations:
             return []
+        if MAIN not in self.annotations[NOTIFICATION_KEY]:
+            return []
         return self.annotations[NOTIFICATION_KEY][MAIN]
 
     def add_notification(self, notification):
@@ -50,6 +52,8 @@ class NotificationStorage(object):
 
     def get_notifications_for_user(self, userid):
         if NOTIFICATION_KEY not in self.annotations:
+            return []
+        if userid not in self.annotations[NOTIFICATION_KEY]:
             return []
         return self.annotations[NOTIFICATION_KEY][userid]
 
