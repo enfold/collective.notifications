@@ -44,7 +44,7 @@
               <th tal:content="notification/user"></th>
               <th><a tal:content="notification/url"
                      tal:attributes="href python:view.mark_read_url(notification)"></a></th>
-              <th tal:content="notification/note"></th>
+              <th tal:on-error="string:Unreadable" tal:content="notification/note"></th>
             </tal:block>
             <tal:block condition="python:item[1] is True"
                        define="notification python:item[0]">
@@ -54,7 +54,7 @@
               <td tal:content="notification/user"></td>
               <td><a tal:content="notification/url"
                      tal:attributes="href notification/url"></a></td>
-              <td tal:content="notification/note"></td>
+              <td tal:on-error="string:Unreadable" tal:content="notification/note"></td>
             </tal:block>
           </tr>
         </tbody>
