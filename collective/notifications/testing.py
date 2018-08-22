@@ -22,6 +22,9 @@ class Notifications(PloneSandboxLayer):
     def setUpZope(self, app, configurationContext):
         # load ZCML
         import collective.notifications
+        import z3c.jbot
+        xmlconfig.file('configure.zcml', z3c.jbot,
+                       context=configurationContext)
         xmlconfig.file('configure.zcml', collective.notifications,
                        context=configurationContext)
         z2.installProduct(app, 'collective.notifications')

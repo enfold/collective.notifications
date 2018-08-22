@@ -34,7 +34,7 @@ class NotificationStorage(object):
     def check_initialized(self, userid=None):
         if NOTIFICATION_KEY not in self.annotations:
             self.annotations[NOTIFICATION_KEY] = OOBTree()
-            self.annotations[NOTIFICATION_KEY][MAIN] = PersistentList()
+            self.annotations[NOTIFICATION_KEY][MAIN] = OOBTree()
         if userid is not None:
             if userid not in self.annotations[NOTIFICATION_KEY]:
                 self.annotations[NOTIFICATION_KEY][userid] = PersistentList()
@@ -44,11 +44,12 @@ class NotificationStorage(object):
             return []
         if MAIN not in self.annotations[NOTIFICATION_KEY]:
             return []
-        return self.annotations[NOTIFICATION_KEY][MAIN]
+        return self.annotations[NOTIFICATION_KEY][MAIN].itervalues()
 
     def add_notification(self, notification):
         self.check_initialized()
-        self.annotations[NOTIFICATION_KEY][MAIN].append(notification)
+        self.annotations[NOTIFICATION_KEY][MAIN].update(
+            {notification.uid: notification})
 
     def get_notifications_for_user(self, userid):
         if NOTIFICATION_KEY not in self.annotations:
@@ -73,11 +74,7 @@ class NotificationStorage(object):
                     notifications.remove((notification, read))
 
     def get_notification(self, uid):
-        notifications = self.get_notifications()
-        notification = None
-        for notification in notifications:
-            if notification.uid == uid:
-                break
+        notification = self.annotations[NOTIFICATION_KEY][MAIN].get(uid)
         return notification
 
     def mark_read_for_users(self, users, uids):
@@ -107,12 +104,12 @@ class NotificationStorage(object):
     def remove_notifications(self, uids):
         if not isinstance(uids, list):
             uids = [uids]
-        notifications = self.get_notifications()
-        for notification in notifications[:]:
-            if notification.uid in uids:
+        for uid in uids:
+            notification = self.get_notification(uid)
+            if notification:
                 for user in notification.recipients:
-                    self.clear_notifications_for_users(user, notification.uid)
-                notifications.remove(notification)
+                    self.clear_notifications_for_users(user, uid)
+                del self.annotations[NOTIFICATION_KEY][MAIN][uid]
 
 
 class Notification(Persistent):
@@ -126,9 +123,10 @@ class Notification(Persistent):
                  first_read=False,
                  external=None):
         uid = getUtility(IUUIDGenerator)()
+        context_uid = getattr(context, 'UID', False) and context.UID() or context.id
         self.uid = uid
         self.date = datetime.now()
-        self.context = getattr(context, 'UID', False) and context.UID() or context.id
+        self.context = context_uid
         self.note = note
         self.recipients = self.get_recipients(recipients)
         self.first_read = first_read

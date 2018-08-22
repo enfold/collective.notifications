@@ -42,6 +42,13 @@ class NotificationsView(BrowserView):
         url = addTokenToUrl(url)
         return url
 
+    def user_display_name(self, username):
+        obj = user.get(userid=username)
+        display = obj.getProperty('fullname')
+        if not display:
+            display = username
+        return display
+
     def __call__(self):
         selected = self.request.get('selected', None)
         if selected is not None:
@@ -65,7 +72,18 @@ class SiteNotificationsView(BrowserView):
     def list_notifications(self):
         site = portal.get()
         storage = INotificationStorage(site)
-        return storage.get_notifications()
+        notifications = [n for n in storage.get_notifications()]
+        return sorted(notifications, key=lambda n: n.date, reverse=True)
+
+    def user_display_name(self, username):
+        obj = user.get(userid=username)
+        display = obj.getProperty('fullname')
+        if not display:
+            display = username
+        return display
+
+    def recipient_display_names(self, recipients):
+        return [self.user_display_name(userid) for userid in recipients]
 
     def __call__(self):
         selected = self.request.get('selected', None)

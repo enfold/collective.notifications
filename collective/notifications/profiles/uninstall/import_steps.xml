@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<import-steps>
+    <import-step id="collective.notifications.uninstall" version="3"
+        handler="collective.notifications.exportimport.uninstall"
+        title="Uninstall step for collective.notifications">
+    </import-step>
+</import-steps>

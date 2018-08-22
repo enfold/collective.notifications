@@ -41,7 +41,7 @@
               <th><input type="checkbox" name="selected"
                          tal:attributes="value notification/uid" /></th>
               <th tal:content="notification/date/ctime"></th>
-              <th tal:content="notification/user"></th>
+              <th tal:content="python:view.user_display_name(notification.user)"></th>
               <th><a tal:content="notification/url"
                      tal:attributes="href python:view.mark_read_url(notification)"></a></th>
               <th tal:on-error="string:Unreadable" tal:content="notification/note"></th>

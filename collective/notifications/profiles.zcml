@@ -12,5 +12,13 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
+  <genericsetup:registerProfile
+      name="uninstall"
+      title="Uninstall notifications"
+      directory="profiles/uninstall"
+      description="uninstalls the collective.notifications package"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
 </configure>
 
