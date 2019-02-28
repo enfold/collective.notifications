@@ -24,6 +24,16 @@ from ..interfaces import _
 from ..interfaces import NotificationRequestedEvent
 
 
+def _user_display_name(username):
+    obj = user.get(userid=username)
+    if obj is None:
+        return username
+    display = obj.getProperty('fullname')
+    if not display:
+        display = username
+    return display
+
+
 class NotificationsView(BrowserView):
 
     def list_notifications(self):
@@ -43,11 +53,7 @@ class NotificationsView(BrowserView):
         return url
 
     def user_display_name(self, username):
-        obj = user.get(userid=username)
-        display = obj.getProperty('fullname')
-        if not display:
-            display = username
-        return display
+        return _user_display_name(username)
 
     def __call__(self):
         selected = self.request.get('selected', None)
@@ -76,11 +82,7 @@ class SiteNotificationsView(BrowserView):
         return sorted(notifications, key=lambda n: n.date, reverse=True)
 
     def user_display_name(self, username):
-        obj = user.get(userid=username)
-        display = obj.getProperty('fullname')
-        if not display:
-            display = username
-        return display
+        return _user_display_name(username)
 
     def recipient_display_names(self, recipients):
         return [self.user_display_name(userid) for userid in recipients]
