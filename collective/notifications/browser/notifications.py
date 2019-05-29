@@ -126,6 +126,16 @@ class NotificationsWaitingView(BrowserView):
         return str(len(notifications))
 
 
+class NotificationCountView(BrowserView):
+
+    def __call__(self):
+        current_user = user.get_current()
+        site = portal.get()
+        storage = INotificationStorage(site)
+        notifications = storage.get_notifications_for_user(current_user.id)
+        return str(len(notifications))
+
+
 @provider(IVocabularyFactory)
 def services_vocabulary_factory(object):
     services = getUtilitiesFor(IExternalNotificationService)

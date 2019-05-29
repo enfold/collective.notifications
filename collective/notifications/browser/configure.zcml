@@ -38,6 +38,13 @@
       />
 
   <browser:page
+      name="total-notification-count"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class=".notifications.NotificationCountView"
+      permission="zope2.View"
+      />
+
+  <browser:page
       name="send-notification"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
       class=".notifications.SendNotificationForm"

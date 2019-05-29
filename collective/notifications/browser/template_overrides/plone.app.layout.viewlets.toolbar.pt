@@ -2,7 +2,8 @@
          tal:define="context_state view/context_state;
                      personal_bar python: view.get_personal_bar();
                      portal view/portal_state/portal;
-                     unread python:portal.restrictedTraverse('notification-count')();"
+                     unread python:portal.restrictedTraverse('notification-count')();
+                     total_notifications python:portal.restrictedTraverse('total-notification-count')()"
          tal:condition="context_state/is_toolbar_visible"
          i18n:domain="plone">
   <div id="edit-zone" role="toolbar" class="pat-toolbar" data-pat-toolbar="${view/get_options}">
@@ -31,8 +32,11 @@
                 <span tal:content="personal_bar/user_name">Username</span>
               </li>
               <li class="user-action" tal:condition="python:int(unread) &gt; 0">
-                <a tal:content="string:${unread} Notifications"
+                <a tal:content="string:Notifications (${unread})"
                   tal:attributes="href string:${view/portal_state/portal_url}/@@my-notifications">notifications</a>
+              </li>
+              <li class="user-action" tal:condition="python:int(unread) == 0 and int(total_notifications) &gt; 0">
+                <a tal:attributes="href string:${view/portal_state/portal_url}/@@my-notifications">Notifications</a>
               </li>
               <li class="user-action"
                   tal:repeat="action personal_bar/user_actions">
