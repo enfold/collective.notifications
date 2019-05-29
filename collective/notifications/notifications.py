@@ -142,6 +142,7 @@ class Notification(Persistent):
 
     def get_recipients(self, recipients):
         recipient_list = []
+        seen = dict()
         if not isinstance(recipients, list):
             recipients = [recipients]
         for recipient in recipients:
@@ -152,9 +153,15 @@ class Notification(Persistent):
                 else:
                     users = [u.id for u in api.user.get_users(groupname=group)]
                 for user in users:
+                    if user in seen:
+                        continue
                     recipient_list.append(user)
+                    seen[user] = 1
             else:
+                if recipient in seen:
+                    continue
                 recipient_list.append(recipient)
+                seen[recipient] = 1
         return recipient_list
 
     def notify(self):
