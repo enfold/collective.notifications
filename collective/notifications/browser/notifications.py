@@ -34,6 +34,17 @@ def _user_display_name(username):
     return display
 
 
+def _adjust_url(url):
+    if not url.startswith('http'):
+        site = portal.get()
+        portal_url = site.absolute_url()
+        if url.startswith('/'):
+            url = portal_url + url
+        else:
+            url = portal_url + '/' + url
+    return url
+
+
 class NotificationsView(BrowserView):
 
     def list_notifications(self):
@@ -48,7 +59,7 @@ class NotificationsView(BrowserView):
         url = "{}/@@notification-read?uid={}&url={}"
         url = url.format(site.absolute_url(),
                          notification.uid,
-                         urllib.quote(notification.url))
+                         urllib.quote(self.adjust_url(notification.url)))
         url = addTokenToUrl(url)
         return url
 
@@ -71,6 +82,9 @@ class NotificationsView(BrowserView):
             if clear is not None:
                 storage.clear_notifications_for_users(current_user.id, selected)
         return super(NotificationsView, self).__call__()
+
+    def adjust_url(self, url):
+        return _adjust_url(url)
 
 
 class SiteNotificationsView(BrowserView):
@@ -96,6 +110,9 @@ class SiteNotificationsView(BrowserView):
             if remove is not None:
                 storage.remove_notifications(selected)
         return super(SiteNotificationsView, self).__call__()
+
+    def adjust_url(self, url):
+        return _adjust_url(url)
 
 
 class NotificationReadView(BrowserView):

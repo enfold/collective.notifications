@@ -36,26 +36,27 @@
             <th>Notes</th>
           </tr>
           <tr tal:repeat="item batch">
-            <tal:block condition="python:item[1] is False"
-                       define="notification python:item[0]">
+            <tal:notification define="notification python:item[0];
+                                      url python:view.adjust_url(notification.url);">
+            <tal:block condition="python:item[1] is False">
               <th><input type="checkbox" name="selected"
                          tal:attributes="value notification/uid" /></th>
               <th tal:content="notification/date/ctime"></th>
               <th tal:content="python:view.user_display_name(notification.user)"></th>
-              <th><a tal:content="notification/url"
+              <th><a tal:content="url"
                      tal:attributes="href python:view.mark_read_url(notification)"></a></th>
               <th tal:on-error="string:Unreadable" tal:content="notification/note"></th>
             </tal:block>
-            <tal:block condition="python:item[1] is True"
-                       define="notification python:item[0]">
+            <tal:block condition="python:item[1] is True">
               <td><input type="checkbox" name="selected"
                          tal:attributes="value notification/uid" /></td>
               <td tal:content="notification/date/ctime"></td>
-              <td tal:content="notification/user"></td>
-              <td><a tal:content="notification/url"
-                     tal:attributes="href notification/url"></a></td>
+              <td tal:content="python:view.user_display_name(notification.user)"></td>
+              <td><a tal:content="url"
+                     tal:attributes="href url"></a></td>
               <td tal:on-error="string:Unreadable" tal:content="notification/note"></td>
             </tal:block>
+            </tal:notification>
           </tr>
         </tbody>
       </table>
