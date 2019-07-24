@@ -1,4 +1,4 @@
-import urllib
+import urllib.parse
 
 from Products.Five.browser import BrowserView
 from z3c.form import button
@@ -7,7 +7,7 @@ from zope import schema
 from zope.component import adapts
 from zope.component import getUtilitiesFor
 from zope.interface import Interface
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface import provider
 from zope.event import notify
 from zope.schema.interfaces import IVocabularyFactory
@@ -59,7 +59,7 @@ class NotificationsView(BrowserView):
         url = "{}/@@notification-read?uid={}&url={}"
         url = url.format(site.absolute_url(),
                          notification.uid,
-                         urllib.quote(self.adjust_url(notification.url)))
+                         urllib.parse.quote(self.adjust_url(notification.url)))
         url = addTokenToUrl(url)
         return url
 
@@ -198,8 +198,8 @@ class SendNotificationSchema(Interface):
     )
 
 
+@implementer(SendNotificationSchema)
 class SendNotificationFormAdapter(object):
-    implements(SendNotificationSchema)
     adapts(Interface)
 
     def __init__(self, context):

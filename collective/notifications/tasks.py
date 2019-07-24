@@ -7,6 +7,6 @@ logger = get_task_logger(__name__)
 
 @task(name="notify")
 def queue_job(notification_uid):
-    from collective.notifications.async import runJob
+    from collective.notifications.pasync import runJob
     logger.warn('Sending notification')
     runJob(notification_uid)

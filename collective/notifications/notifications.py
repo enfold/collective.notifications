@@ -3,7 +3,7 @@ from BTrees.OOBTree import OOBTree
 from Persistence import Persistent
 from persistent.list import PersistentList
 
-from zope.interface import implements
+from zope.interface import implementer
 from zope.component import adapts
 from zope.component import getUtilitiesFor
 from zope.component import getUtility
@@ -14,7 +14,7 @@ from plone import api
 from plone.app.layout.navigation.interfaces import INavigationRoot
 from plone.uuid.interfaces import IUUIDGenerator
 
-from .async import queueJob
+from .pasync import queueJob
 from .interfaces import INotificationStorage
 from .interfaces import IExternalNotificationService
 
@@ -23,10 +23,10 @@ NOTIFICATION_KEY = 'collective.notifications'
 MAIN = '__notifications__'
 
 
+@implementer(INotificationStorage)
 class NotificationStorage(object):
 
     adapts(INavigationRoot)
-    implements(INotificationStorage)
 
     def __init__(self, context):
         self.annotations = IAnnotations(context)

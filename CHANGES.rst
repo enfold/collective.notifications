@@ -1,3 +1,11 @@
+0.6
+---
+
+- Remove support for plone.app.async.
+
+- Add python 3 support
+
+
 0.5
 ---
 

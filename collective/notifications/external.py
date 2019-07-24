@@ -1,14 +1,13 @@
 import email
 
 from plone import api
-from zope.interface import implements
+from zope.interface import implementer
 
 from .interfaces import IExternalNotificationService
 
 
+@implementer(IExternalNotificationService)
 class EmailNotifier(object):
-
-    implements(IExternalNotificationService)
 
     def send(self, notification):
         portal = api.portal.get()

@@ -2,7 +2,7 @@
 from setuptools import find_packages
 from setuptools import setup
 
-version = '0.5'
+version = '0.6'
 
 setup(
     name='collective.notifications',
@@ -17,10 +17,12 @@ setup(
     # http://pypi.python.org/pypi?:action=list_classifiers
     classifiers=[
         "Framework :: Plone",
-        "Framework :: Plone :: 4.3",
         "Framework :: Plone :: 5.0",
+        "Framework :: Plone :: 5.1",
+        "Framework :: Plone :: 5.2",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.7",
         "Operating System :: OS Independent"
     ],
     keywords='Plone Notifications',
@@ -37,8 +39,8 @@ setup(
         'z3c.jbot',
     ],
     extras_require={
-        'async': [
-            'plone.app.async',
+        'celery': [
+            'collective.celery',
         ]
     },
     entry_points="""
