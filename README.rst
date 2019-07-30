@@ -36,6 +36,9 @@ code similar to this:
                                       user=user_id,
                                       url=action_url,
                                       external='email',
+                                      email_body=email_body,
+                                      email_subject=email_subject,
+                                      email_content_type=content_type,
                                       first_read=False))
 
 The `context` is the affected object. `note` is a plain text string with the
@@ -47,7 +50,7 @@ notification to all users of the groups reviewers and staff, as well as to
 individual users jsmith and jdoe. The special group "Members" will notify
 all portal users.
 
-The last four parameters are optional: `user` can be the userid of the user
+The last seven parameters are optional: `user` can be the userid of the user
 associated with the notification. This is just in case we need a different
 user than the currently logged in user, which is the default. `url` will be
 used as a site action if provided, otherwise the context url will be used.
@@ -58,7 +61,12 @@ so no external notifications will be sent if this parameter is omitted.
 Finally, `first_read`, if True, marks the notification as read for all
 recipients after one user reads it. This can be used to send a notification
 to a group where multiple users can take action, but can safely ignore the
-notification once someone reads it. Default is False.
+notification once someone reads it. Default is False. `email_body` is text for
+the body of the email sent by the 'email' external service. `note` will be used
+if `email_body` is not set. `email_body` should be either html or plain text.
+`email_content_type` should be 'text/html' if `email_body` is html.
+`email_subject` text for the subject of the email sent by the 'email' external
+service.
 
 
 External Notification Services

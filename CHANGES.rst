@@ -5,6 +5,8 @@
 
 - Add python 3 support
 
+- Support supplying separate text for email notifications.
+
 
 0.5
 ---
