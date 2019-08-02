@@ -18,3 +18,6 @@
 
 - #2755049: Use relative path for url generated from context item.
   [JL 2019-08-02]
+
+- #2755049: Fix test.
+  [JL 2019-08-02]

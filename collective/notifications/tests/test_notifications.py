@@ -34,7 +34,7 @@ class TestNotifications(BaseTestCase):
         )
 
         self.assertEqual(
-            self.portal.absolute_url(),
+            '',
             notification.url,
             'Unexpected URL value for notification'
         )
