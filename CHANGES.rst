@@ -15,3 +15,6 @@
 
 - #2755049: If notification url does not start with http append it to portal_url on display.
   [JL 2019-05-30]
+
+- #2755049: Use relative path for url generated from context item.
+  [JL 2019-08-02]

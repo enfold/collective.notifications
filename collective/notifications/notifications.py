@@ -138,6 +138,8 @@ class Notification(Persistent):
         self.user = user
         if url is None:
             url = context.absolute_url()
+            portal_url = api.portal.get().absolute_url()
+            url = url[len(portal_url):]
         self.url = url
 
     def get_recipients(self, recipients):
