@@ -7,6 +7,8 @@
 
 - Support supplying separate text for email notifications.
 
+- Don't fail if there is no site from email address configured.
+
 
 0.5
 ---

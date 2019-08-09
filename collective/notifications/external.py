@@ -5,6 +5,12 @@ from plone import api
 from zope.interface import implementer
 
 from .interfaces import IExternalNotificationService
+try:
+    from celery.utils.log import get_task_logger
+    logger = get_task_logger(__name__)
+except ImportError:
+    import logging
+    logger = logging.getLogger('collective.notifications')
 
 
 @implementer(IExternalNotificationService)
@@ -28,12 +34,19 @@ class EmailNotifier(object):
         msg.set_charset('utf-8')
         name = api.portal.get_registry_record('plone.email_from_name')
         address = api.portal.get_registry_record('plone.email_from_address')
+        if not address:
+            logger.warn('Unable to send message. An email from address has '
+                        'not been configured for this site.')
+            return
         mfrom = email.utils.formataddr((name, address))
         mailhost = portal.MailHost
         for recipient in notification.recipients:
             user = api.user.get(userid=recipient)
-            address = user.getProperty('email', None)
+            address = user.getProperty('email', '')
             if not address:
+                msg = ('The %s user has no email address. Unable to send '
+                       'an email to them.')
+                logger.warn(msg % recipient)
                 continue
             mailhost.send(msg,
                           subject=subject,
