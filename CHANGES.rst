@@ -21,3 +21,6 @@
 
 - #2755049: Fix test.
   [JL 2019-08-02]
+
+- #2978679: Support custom email subject and body.
+  [JL 2019-10-14]

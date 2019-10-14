@@ -25,6 +25,8 @@ class INotificationRequestedEvent(Interface):
     url = Attribute("URL for notification action.")
     first_read = Attribute("Mark as read for all recipients on first read.")
     external = Attribute("List of external services to notify.")
+    email_body = Attribute("Optional body for email notification.")
+    email_subject = Attribute("Optional subject for email notification.")
 
 
 @implementer(INotificationRequestedEvent)
@@ -37,7 +39,9 @@ class NotificationRequestedEvent(object):
                  user=None,
                  url=None,
                  first_read=False,
-                 external=None):
+                 external=None,
+                 email_body=None,
+                 email_subject=None):
         self.object = object
         self.note = note
         self.recipients = recipients
@@ -45,3 +49,5 @@ class NotificationRequestedEvent(object):
         self.url = url
         self.first_read = first_read
         self.external = external
+        self.email_body = email_body
+        self.email_subject = email_subject
