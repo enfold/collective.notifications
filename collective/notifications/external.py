@@ -42,6 +42,12 @@ class EmailNotifier(object):
         mailhost = portal.MailHost
         for recipient in notification.recipients:
             user = api.user.get(userid=recipient)
+            if not user:
+                msg = ('Was not able to find user for userid %s. Unable '
+                       'to send notification email' % recipient)
+                logger.warn(msg)
+                continue
+
             address = user.getProperty('email', '')
             if not address:
                 msg = ('The %s user has no email address. Unable to send '
